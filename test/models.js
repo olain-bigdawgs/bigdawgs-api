@@ -3,6 +3,10 @@ const sinon = require('sinon');
 require('sinon-mongoose');
 
 const User = require('../models/User');
+const GreetingCard = require('../models/GreetingCard');
+const Image = require('../models/Image');
+const Video = require('../models/Video');
+const Sound = require('../models/Sound');
 
 describe('User Model', () => {
   it('should create a new user', (done) => {
@@ -142,5 +146,101 @@ describe('User Model', () => {
 
     const gravatar = user.gravatar();
     expect(gravatar.includes(md5)).to.equal(true);
+  });
+});
+
+// Greeting Card
+
+describe('Greeting Card Model', () => {
+  it('should create a new video greeting card', (done) => {
+    const GreetingCardMock = sinon.mock(new GreetingCard({ name: 'Sample Greeting Card', imageID: '0001', videoID: '0001', productID: '0001' }));
+    const greetingcard = GreetingCardMock.object;
+
+    GreetingCardMock
+      .expects('save')
+      .yields(null);
+
+    greetingcard.save((err) => {
+      GreetingCardMock.verify();
+      GreetingCardMock.restore();
+      expect(err).to.be.null;
+      done();
+    });
+  });
+
+  it('should create a new greeting card', (done) => {
+    const GreetingCardMock = sinon.mock(new GreetingCard({ name: 'Sample Greeting Card', imageID: '0001', soundID: '0001', productID: '0002' }));
+    const greetingcard = GreetingCardMock.object;
+
+    GreetingCardMock
+      .expects('save')
+      .yields(null);
+
+    greetingcard.save((err) => {
+      GreetingCardMock.verify();
+      GreetingCardMock.restore();
+      expect(err).to.be.null;
+      done();
+    });
+  });
+});
+
+// Image
+
+describe('Image Model', () => {
+  it('should create a new image', (done) => {
+    const ImageMock = sinon.mock(new Image({ name: 'sample-image', caption: 'sample caption', signoff: 'Anonymous', format: 'jpg', size: '100 mb', greetingCardID: '' }));
+    const image = ImageMock.object;
+
+    ImageMock
+      .expects('save')
+      .yields(null);
+
+    image.save((err) => {
+      ImageMock.verify();
+      ImageMock.restore();
+      expect(err).to.be.null;
+      done();
+    });
+  });
+});
+
+// Video
+
+describe('Video Model', () => {
+  it('should create a new video', (done) => {
+    const VideoMock = sinon.mock(new Video({ name: 'sample-video', caption: 'sample caption', signoff: 'Anonymous', format: 'mp4', size: '250 mb', greetingCardID: '' }));
+    const video = VideoMock.object;
+
+    VideoMock
+      .expects('save')
+      .yields(null);
+
+    video.save((err) => {
+      VideoMock.verify();
+      VideoMock.restore();
+      expect(err).to.be.null;
+      done();
+    });
+  });
+});
+
+// Sound
+
+describe('Sound Model', () => {
+  it('should create a new sound', (done) => {
+    const SoundMock = sinon.mock(new Sound({ name: 'sample-sound', format: 'mp4', size: '250 mb', greetingCardID: '' }));
+    const sound = SoundMock.object;
+
+    SoundMock
+      .expects('save')
+      .yields(null);
+
+    sound.save((err) => {
+      SoundMock.verify();
+      SoundMock.restore();
+      expect(err).to.be.null;
+      done();
+    });
   });
 });
