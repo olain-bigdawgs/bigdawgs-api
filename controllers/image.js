@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const _ = require("lodash");
 const path = require("path");
 const Image = require("../models/Image");
+const cloudinary = require("../services/cloudinary");
 const bytes = require("bytes");
 
 /**
@@ -31,10 +32,15 @@ exports.postFileUpload = async (req, res) => {
     };
 
     let image = new Image(data);
+    let cld = {
+      path: upload.path,
+      folder_name: "Images"
+    };
 
     image
       .save()
       .then(image => {
+        cloudinary.upload(cld);
         res.status(201).json(image);
       })
       .catch(err => {
@@ -50,7 +56,12 @@ exports.postFileUpload = async (req, res) => {
       });
   } else {
     res.status(400).send({
-      message: "No image uploaded"
+      message: "Validation Failed",
+      errors: [
+        {
+          msg: "No image uploaded"
+        }
+      ]
     });
   }
 };
