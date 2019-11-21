@@ -222,7 +222,6 @@ app.get("/tokentest", jwtMiddleware.verifyToken, (req, res) => {
 
 app.get("/test-image", homeController.indexImage);
 app.get("/test-video", homeController.indexVideo);
-app.get("/image", [jwtMiddleware.verifyToken], imageController.getFileUpload);
 app.post("/image", [upload.any()], imageController.postFileUpload);
 app.post("/video", [upload.any()], videoController.postVideoUpload);
 
