@@ -36,6 +36,7 @@ exports.getImageById = async (req, res) => {
  * Create a new image
  */
 exports.postFileUpload = async (req, res) => {
+  console.log(req.body);
   if (req.files) {
     let upload = req.files[0];
     let image_format = path.extname(upload.filename).substr(1);
@@ -80,6 +81,16 @@ exports.postFileUpload = async (req, res) => {
             ]
           });
         });
+    }).catch(err => {
+      return res.status(400).json({
+        message: "Something went wrong",
+        errors: [
+          {
+            name: err.name,
+            msg: err.message
+          }
+        ]
+      });
     });
   } else {
     return res.status(400).send({
@@ -97,7 +108,7 @@ exports.postFileUpload = async (req, res) => {
  * PUT /image/:id
  * Update image by id
  */
-exports.putImageById = async (req, res) => {
+exports.updateImageById = async (req, res) => {
   let objId = mongoose.Types.ObjectId.isValid(req.params.id)
     ? mongoose.Types.ObjectId(req.params.id)
     : "123456789012";

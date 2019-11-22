@@ -110,7 +110,7 @@ exports.postVideoUpload = async (req, res) => {
  * PUT /video/:id
  * Update video by id
  */
-exports.putVideoById = async (req, res) => {
+exports.updateVideoById = async (req, res) => {
   let objId = mongoose.Types.ObjectId.isValid(req.params.id)
     ? mongoose.Types.ObjectId(req.params.id)
     : "123456789012";
