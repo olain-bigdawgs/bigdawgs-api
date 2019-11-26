@@ -15,7 +15,6 @@ const flash = require("express-flash");
 const path = require("path");
 const mongoose = require("mongoose");
 const passport = require("passport");
-const expressStatusMonitor = require("express-status-monitor");
 const sass = require("node-sass-middleware");
 const multer = require("multer");
 const cors = require("cors");
