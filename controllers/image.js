@@ -1,10 +1,12 @@
 const multer = require("multer");
 const bodyParser = require("body-parser");
 const _ = require("lodash");
+const mongoose = require("mongoose");
 const path = require("path");
 const Image = require("../models/Image");
 const cloudinary = require("../services/cloudinary");
 const bytes = require("bytes");
+const GreetingCard = require("../models/GreetingCard");
 
 /**
  * GET /image/:id
@@ -36,7 +38,6 @@ exports.getImageById = async (req, res) => {
  * Create a new image
  */
 exports.postFileUpload = async (req, res) => {
-  console.log(req.body);
   if (req.files) {
     let upload = req.files[0];
     let image_format = path.extname(upload.filename).substr(1);
@@ -61,14 +62,34 @@ exports.postFileUpload = async (req, res) => {
         public_id: fileupload.public_id,
         url: fileupload.secure_url
       };
-      console.log(data);
 
       let image = new Image(data);
 
       image
         .save()
         .then(image => {
-          return res.status(201).json(image);
+          let gcdata = {
+            imageID: image._id,
+            productID: _.get(req.body, "product_id")
+          };
+
+          let greetingcard = new GreetingCard(gcdata);
+          greetingcard
+            .save()
+            .then(card => {
+              return res.status(201).json(image);
+            })
+            .catch(err => {
+              return res.status(400).json({
+                message: "Something went wrong",
+                errors: [
+                  {
+                    name: err.name,
+                    msg: err.message
+                  }
+                ]
+              });
+            });
         })
         .catch(err => {
           return res.status(400).json({

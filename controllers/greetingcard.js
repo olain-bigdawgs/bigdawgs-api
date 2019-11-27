@@ -1,8 +1,12 @@
 const multer = require("multer");
 const bodyParser = require("body-parser");
 const _ = require("lodash");
+const mongoose = require("mongoose");
 const path = require("path");
 const GreetingCard = require("../models/GreetingCard");
+const Image = require("../models/Image");
+const Video = require("../models/Video");
+const Sound = require("../models/Sound");
 
 exports.getCardById = async (req, res) => {
   let objId = mongoose.Types.ObjectId.isValid(req.params.id)
@@ -10,6 +14,9 @@ exports.getCardById = async (req, res) => {
     : "123456789012";
 
   let greeting_card = await GreetingCard.findOne({ _id: objId }).exec();
+  let image = await Image.findOne({ _id: greeting_card.imageID }).exec();
+  let video = await Video.findOne({ _id: greeting_card.videoID }).exec();
+  let sound = await Sound.findOne({ _id: greeting_card.soundID }).exec();
 
   if (!greeting_card) {
     return res.status(404).json({
@@ -22,7 +29,16 @@ exports.getCardById = async (req, res) => {
     });
   }
 
-  return res.status(200).json(greeting_card);
+  let display_data = {
+    _id: greeting_card._id,
+    imageUrl: _.get(image, "imageUrl.url"),
+    videoUrl: _.get(video, "videoUrl.url", ""),
+    soundUrl: _.get(sound, "soundUrl.url", ""),
+    caption: _.get(image, "caption"),
+    sign_off: _.get(image, "signoff")
+  };
+
+  return res.status(200).json(display_data);
 };
 
 exports.postGreetingCard = async (req, res) => {
@@ -39,7 +55,7 @@ exports.postGreetingCard = async (req, res) => {
   greeting_card
     .save()
     .then(card => {
-      res.status(201).json(card);
+      return res.status(201).json(card);
     })
     .catch(err => {
       return res.status(400).json({

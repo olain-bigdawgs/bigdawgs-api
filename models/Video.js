@@ -5,8 +5,6 @@ const mongooseHidden = require("mongoose-hidden")();
 const videoSchema = new mongoose.Schema(
   {
     name: String,
-    caption: String,
-    signoff: String,
     format: {
       type: String,
       enum: ["avi", "mp4", "wmv", "mov"],
