@@ -223,6 +223,10 @@ app.get("/tokentest", jwtMiddleware.verifyToken, (req, res) => {
 app.get("/test-image", homeController.indexImage);
 app.get("/test-video", homeController.indexVideo);
 
+// greeting card routes
+app.get("/greeting-card/:id", greetingCardController.getCardById);
+app.post("/greeting-card", greetingCardController.postGreetingCard);
+
 // image routes
 app.get("/image/:id", imageController.getImageById);
 app.post("/image", [upload.any()], imageController.postFileUpload);
