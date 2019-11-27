@@ -82,7 +82,7 @@ app.set("host", process.env.OPENSHIFT_NODEJS_IP || "localhost");
 app.set("port", process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 5000);
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
-app.use(expressStatusMonitor());
+// app.use(expressStatusMonitor());
 app.use(compression());
 app.use(
   sass({
