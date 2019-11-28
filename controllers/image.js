@@ -4,9 +4,9 @@ const _ = require("lodash");
 const mongoose = require("mongoose");
 const path = require("path");
 const Image = require("../models/Image");
+const GreetingCard = require("../models/GreetingCard");
 const cloudinary = require("../services/cloudinary");
 const bytes = require("bytes");
-const GreetingCard = require("../models/GreetingCard");
 
 /**
  * GET /image/:id
@@ -74,6 +74,7 @@ exports.postFileUpload = async (req, res) => {
           };
 
           let greetingcard = new GreetingCard(gcdata);
+
           greetingcard
             .save()
             .then(card => {

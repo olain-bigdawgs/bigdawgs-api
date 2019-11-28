@@ -68,10 +68,40 @@ exports.postSoundUpload = async (req, res) => {
         sound
           .save()
           .then(sound => {
-            res.status(201).json(sound);
+            let gcID = mongoose.Types.ObjectId.isValid(
+              _.get(req.body, "greeting_card_id")
+            )
+              ? mongoose.Types.ObjectId(_.get(req.body, "greeting_card_id"))
+              : "123456789012";
+
+            let greetingcard = GreetingCard.findOne({ _id: gcID }).exec();
+
+            let gcdata = {
+              name: greetingcard.name,
+              productID: greetingcard.productID,
+              imageID: greetingcard.imageID,
+              videoID: greetingcard.videoID,
+              soundID: sound._id
+            };
+
+            GreetingCard.findByIdAndUpdate(gcId, gcdata, { new: true })
+              .then(card => {
+                res.status(201).json(sound);
+              })
+              .catch(err => {
+                res.status(500).json({
+                  message: "Something went wrong",
+                  errors: [
+                    {
+                      name: err.name,
+                      msg: err.message
+                    }
+                  ]
+                });
+              });
           })
           .catch(err => {
-            res.status(400).json({
+            res.status(500).json({
               message: "Something went wrong",
               errors: [
                 {

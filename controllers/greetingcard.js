@@ -34,8 +34,8 @@ exports.getCardById = async (req, res) => {
     imageUrl: _.get(image, "imageUrl.url"),
     videoUrl: _.get(video, "videoUrl.url", ""),
     soundUrl: _.get(sound, "soundUrl.url", ""),
-    caption: _.get(image, "caption"),
-    sign_off: _.get(image, "signoff")
+    caption: _.get(image, "caption", ""),
+    sign_off: _.get(image, "signoff", "")
   };
 
   return res.status(200).json(display_data);
