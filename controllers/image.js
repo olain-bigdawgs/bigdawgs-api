@@ -43,9 +43,7 @@ exports.postFileUpload = async (req, res) => {
     let image_format = path.extname(upload.filename).substr(1);
 
     let data = {
-      name: _.get(req.body, "name"),
-      caption: _.get(req.body, "caption"),
-      signoff: _.get(req.body, "sign_off"),
+      name: upload.filename,
       format: image_format,
       size: upload.size
     };

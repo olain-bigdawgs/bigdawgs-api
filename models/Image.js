@@ -5,8 +5,6 @@ const mongooseHidden = require("mongoose-hidden")();
 const imageSchema = new mongoose.Schema(
   {
     name: String,
-    caption: String,
-    signoff: String,
     format: { type: String, enum: ["jpg", "jpeg", "png"], default: "jpg" },
     size: String,
     imageUrl: { type: Schema.Types.Mixed, default: {} },
