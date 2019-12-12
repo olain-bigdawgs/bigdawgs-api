@@ -45,7 +45,7 @@ exports.postVideoUpload = async (req, res) => {
 
     if (upload.size < file_upload_limit) {
       let data = {
-        name: _.get(req.body, "name"),
+        name: upload.filename,
         caption: _.get(req.body, "caption"),
         signoff: _.get(req.body, "sign_off"),
         format: video_format,
@@ -65,17 +65,17 @@ exports.postVideoUpload = async (req, res) => {
           url: fileupload.secure_url
         };
 
+        let gcID = mongoose.Types.ObjectId.isValid(
+          _.get(req.body, "greeting_card_id")
+        )
+          ? mongoose.Types.ObjectId(_.get(req.body, "greeting_card_id"))
+          : "123456789012";
+
         let video = new Video(data);
 
         video
           .save()
           .then(video => {
-            let gcID = mongoose.Types.ObjectId.isValid(
-              _.get(req.body, "greeting_card_id")
-            )
-              ? mongoose.Types.ObjectId(_.get(req.body, "greeting_card_id"))
-              : "123456789012";
-
             let greetingcard = GreetingCard.findOne({ _id: gcID }).exec();
 
             let gcdata = {
@@ -86,11 +86,12 @@ exports.postVideoUpload = async (req, res) => {
               videoID: video._id
             };
 
-            GreetingCard.findByIdAndUpdate(gcId, gcdata, { new: true })
+            GreetingCard.findByIdAndUpdate(gcID, gcdata, { new: true })
               .then(card => {
                 res.status(201).json(video);
               })
               .catch(err => {
+                console.log(err);
                 res.status(500).json({
                   message: "Something went wrong",
                   errors: [
@@ -103,6 +104,7 @@ exports.postVideoUpload = async (req, res) => {
               });
           })
           .catch(err => {
+            console.log(err);
             res.status(500).json({
               message: "Something went wrong",
               errors: [

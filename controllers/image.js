@@ -76,7 +76,18 @@ exports.postFileUpload = async (req, res) => {
           greetingcard
             .save()
             .then(card => {
-              return res.status(201).json(image);
+              data.greetingCardID = card._id;
+
+              Image.findByIdAndUpdate(image._id, data, { new: true })
+                .then(img => {
+                  res.status(201).json(img);
+                })
+                .catch(err => {
+                  return res.status(500).json({
+                    message: "Something went wrong",
+                    errors: [{ msg: err }]
+                  });
+                });
             })
             .catch(err => {
               return res.status(400).json({
