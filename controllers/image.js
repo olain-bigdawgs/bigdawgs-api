@@ -7,6 +7,8 @@ const Image = require("../models/Image");
 const GreetingCard = require("../models/GreetingCard");
 const cloudinary = require("../services/cloudinary");
 const bytes = require("bytes");
+const base64ToImage = require("base64-to-image");
+const fs = require("fs");
 
 /**
  * GET /image/:id
@@ -38,101 +40,109 @@ exports.getImageById = async (req, res) => {
  * Create a new image
  */
 exports.postFileUpload = async (req, res) => {
-  if (req.files) {
-    let upload = req.files[0];
-    let image_format = path.extname(upload.filename).substr(1);
+  let imgdata = {
+    base64img: _.get(req.body, "imageB64"),
+    imgID: _.get(req.body, "imageID"),
+    productID: _.get(req.body, "product_id")
+  };
+  let imgpath = process.cwd() + "\\img-";
+  let imgformat = imgdata.base64img.substring(
+    "data:image/".length,
+    imgdata.base64img.indexOf(";base64")
+  );
+  let imgOptions = {
+    fileName: _.get(req.body, "imageID"),
+    type: imgformat
+  };
 
-    let data = {
-      name: upload.filename,
-      format: image_format,
-      size: upload.size
-    };
+  let generatedImg = base64ToImage(imgdata.base64img, imgpath, imgOptions);
+  let imgFilename = generatedImg.fileName
+    .split(".")
+    .slice(0, -1)
+    .join(".");
 
-    let cld = {
-      path: upload.path,
-      folder_name: "Images"
-    };
+  let data = {
+    name: imgFilename,
+    format: imgformat
+  };
 
-    let cd = cloudinary.upload(cld);
+  console.log(generatedImg);
 
-    cd.then(fileupload => {
-      data.imageUrl = {
-        public_id: fileupload.public_id,
-        url: fileupload.secure_url
-      };
+  let cld = {
+    path: imgpath + generatedImg.fileName,
+    folder_name: "Images"
+  };
 
-      let image = new Image(data);
+  let cd = cloudinary.upload(cld);
 
-      image
-        .save()
-        .then(image => {
-          let gcdata = {
-            imageID: image._id,
-            productID: _.get(req.body, "product_id")
-          };
+  cd.then(fileupload => {
+    console.log(fileupload);
 
-          let greetingcard = new GreetingCard(gcdata);
-
-          greetingcard
-            .save()
-            .then(card => {
-              data.greetingCardID = card._id;
-
-              Image.findByIdAndUpdate(image._id, data, { new: true })
-                .then(img => {
-                  res.status(201).json(img);
-                })
-                .catch(err => {
-                  return res.status(500).json({
-                    message: "Something went wrong",
-                    errors: [{ msg: err }]
-                  });
-                });
-            })
-            .catch(err => {
-              return res.status(400).json({
-                message: "Something went wrong",
-                errors: [
-                  {
-                    name: err.name,
-                    msg: err.message
-                  }
-                ]
-              });
-            });
-        })
-        .catch(err => {
-          return res.status(400).json({
-            message: "Something went wrong",
-            errors: [
-              {
-                name: err.name,
-                msg: err.message
-              }
-            ]
-          });
-        });
-    }).catch(err => {
-      return res.status(400).json({
-        message: "Something went wrong",
-        errors: [
-          {
-            name: err.name,
-            msg: err.message
-          }
-        ]
-      });
+    fs.unlink(cld.path, err => {
+      if (err) {
+        console.error(err);
+        return;
+      }
     });
-  } else {
-    return res.status(400).send({
-      message: "Validation Failed",
+
+    data.size = fileupload.bytes;
+    data.imageUrl = {
+      public_id: fileupload.public_id,
+      url: fileupload.secure_url
+    };
+
+    let image = new Image(data);
+
+    image
+      .save()
+      .then(image => {
+        let gcdata = {
+          imageID: image._id,
+          productID: _.get(req.body, "product_id")
+        };
+
+        let greetingcard = new GreetingCard(gcdata);
+
+        greetingcard
+          .save()
+          .then(card => {
+            data.greetingCardID = card._id;
+            res.status(201).json(image);
+          })
+          .catch(err => {
+            return res.status(400).json({
+              message: "Something went wrong",
+              errors: [
+                {
+                  name: err.name,
+                  msg: err.message
+                }
+              ]
+            });
+          });
+      })
+      .catch(err => {
+        return res.status(400).json({
+          message: "Something went wrong",
+          errors: [
+            {
+              name: err.name,
+              msg: err.message
+            }
+          ]
+        });
+      });
+  }).catch(err => {
+    return res.status(400).json({
+      message: "Something went wrong",
       errors: [
         {
-          msg: "No image uploaded"
+          name: err.name,
+          msg: err.message
         }
       ]
     });
-  }
+  });
 };
 
 /**
