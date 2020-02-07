@@ -66,8 +66,6 @@ exports.postFileUpload = async (req, res) => {
     format: imgformat
   };
 
-  console.log(generatedImg);
-
   let cld = {
     path: imgpath + generatedImg.fileName,
     folder_name: "Images"
@@ -76,8 +74,6 @@ exports.postFileUpload = async (req, res) => {
   let cd = cloudinary.upload(cld);
 
   cd.then(fileupload => {
-    console.log(fileupload);
-
     fs.unlink(cld.path, err => {
       if (err) {
         console.error(err);
@@ -107,7 +103,7 @@ exports.postFileUpload = async (req, res) => {
           .save()
           .then(card => {
             data.greetingCardID = card._id;
-            res.status(201).json(image);
+            res.status(201).json(data);
           })
           .catch(err => {
             return res.status(400).json({

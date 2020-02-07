@@ -4,6 +4,7 @@ const _ = require("lodash");
 const mongoose = require("mongoose");
 const path = require("path");
 const Sound = require("../models/Sound");
+const GreetingCard = require("../models/GreetingCard");
 const cloudinary = require("../services/cloudinary");
 const bytes = require("bytes");
 const file_upload_limit = "2147483648";
@@ -42,7 +43,6 @@ exports.postSoundUpload = async (req, res) => {
     let upload = req.files[0];
     let sound_format = path.extname(upload.filename).substr(1);
 
-    console.log(upload);
     if (upload.size < file_upload_limit) {
       let data = {
         name: _.get(req.body, "name"),
