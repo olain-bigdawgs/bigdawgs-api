@@ -93,8 +93,8 @@ app.use(
 
 app.use(cors());
 app.use(logger("dev"));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: "150mb" }));
+app.use(bodyParser.urlencoded({ limit: "150mb", extended: true }));
 // app.use(session({
 //   resave: true,
 //   saveUninitialized: true,
@@ -261,7 +261,7 @@ if (process.env.NODE_ENV === "development") {
 /**
  * Start Express server.
  */
-app.listen(app.get("port"), app.get("host") => {
+app.listen(app.get("port"), () => {
   console.log(
     "%s App is running at http://localhost:%d in %s mode",
     chalk.green("✓"),
@@ -269,6 +269,6 @@ app.listen(app.get("port"), app.get("host") => {
     app.get("env")
   );
   console.log("  Press CTRL-C to stop\n");
-};
+});
 
 module.exports = app;

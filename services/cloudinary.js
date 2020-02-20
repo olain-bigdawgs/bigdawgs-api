@@ -13,7 +13,7 @@ exports.upload = file => {
     {
       use_filename: true,
       folder: file.folder_name,
-      resource_type: "auto"
+      resource_type: file.resource_type
     },
     (err, res) => {
       if (err) {
@@ -21,6 +21,26 @@ exports.upload = file => {
       }
     }
   );
+};
+
+exports.upload_large = file => {
+  return new Promise((resolve, reject) => {
+    cloudinary.v2.uploader.upload_large(
+      file.path,
+      {
+        use_filename: true,
+        folder: file.folder_name,
+        resource_type: file.resource_type
+      },
+      (err, res) => {
+        resolve(res);
+        if (err) {
+          console.log(err);
+          reject(err);
+        }
+      }
+    );
+  });
 };
 
 exports.delete = file => {

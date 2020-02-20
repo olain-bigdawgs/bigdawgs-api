@@ -39,6 +39,19 @@ exports.getVideoById = async (req, res) => {
  * Create a new video
  */
 exports.postVideoUpload = async (req, res) => {
+  let gcID = mongoose.Types.ObjectId.isValid(
+    _.get(req.body, "greeting_card_id")
+  )
+    ? mongoose.Types.ObjectId(_.get(req.body, "greeting_card_id"))
+    : "123456789012";
+  let greetingcard = await GreetingCard.findOne({ _id: gcID }).exec();
+  let gcdata = {
+    name: greetingcard.name,
+    productID: greetingcard.productID,
+    imageID: greetingcard.imageID,
+    soundID: greetingcard.soundID
+  };
+
   if (req.files) {
     let upload = req.files[0];
     let video_format = path.extname(upload.filename).substr(1);
@@ -57,7 +70,7 @@ exports.postVideoUpload = async (req, res) => {
         folder_name: "Videos"
       };
 
-      let cd = cloudinary.upload(cld);
+      let cd = cloudinary.upload_large(cld);
 
       cd.then(fileupload => {
         data.videoUrl = {
@@ -65,30 +78,18 @@ exports.postVideoUpload = async (req, res) => {
           url: fileupload.secure_url
         };
 
-        let gcID = mongoose.Types.ObjectId.isValid(
-          _.get(req.body, "greeting_card_id")
-        )
-          ? mongoose.Types.ObjectId(_.get(req.body, "greeting_card_id"))
-          : "123456789012";
-
         let video = new Video(data);
 
         video
           .save()
           .then(video => {
-            let greetingcard = GreetingCard.findOne({ _id: gcID }).exec();
-
-            let gcdata = {
-              name: greetingcard.name,
-              productID: greetingcard.productID,
-              imageID: greetingcard.imageID,
-              soundID: greetingcard.soundID,
-              videoID: video._id
-            };
+            gcdata.videoID = video._id;
 
             GreetingCard.findByIdAndUpdate(gcID, gcdata, { new: true })
               .then(card => {
-                res.status(201).json(video);
+                Promise.all([cd, video]).then(result => {
+                  res.status(201).json(video);
+                });
               })
               .catch(err => {
                 console.log(err);

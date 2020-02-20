@@ -68,7 +68,8 @@ exports.postFileUpload = async (req, res) => {
 
   let cld = {
     path: imgpath + generatedImg.fileName,
-    folder_name: "Images"
+    folder_name: "Images",
+    resource_type: "image"
   };
 
   let cd = cloudinary.upload(cld);
