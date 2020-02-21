@@ -45,7 +45,7 @@ exports.postFileUpload = async (req, res) => {
     imgID: _.get(req.body, "imageID"),
     productID: _.get(req.body, "product_id")
   };
-  let imgpath = process.cwd() + "\\img-";
+  let imgpath = process.cwd() + "/img-";
   let imgformat = imgdata.base64img.substring(
     "data:image/".length,
     imgdata.base64img.indexOf(";base64")
