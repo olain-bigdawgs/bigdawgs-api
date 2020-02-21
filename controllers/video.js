@@ -116,6 +116,17 @@ exports.postVideoUpload = async (req, res) => {
               ]
             });
           });
+      }).catch(err => {
+        console.log(err);
+        res.status(500).json({
+          message: "Something went wrong",
+          errors: [
+            {
+              name: err.name,
+              msg: err.message
+            }
+          ]
+        });
       });
     } else {
       res.status(400).send({
