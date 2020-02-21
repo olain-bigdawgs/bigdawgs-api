@@ -67,7 +67,8 @@ exports.postVideoUpload = async (req, res) => {
 
       let cld = {
         path: upload.path,
-        folder_name: "Videos"
+        folder_name: "Videos",
+        resource_type: "video"
       };
 
       let cd = cloudinary.upload_large(cld);
@@ -84,6 +85,12 @@ exports.postVideoUpload = async (req, res) => {
           .save()
           .then(video => {
             gcdata.videoID = video._id;
+            fs.unlink(cld.path, err => {
+              if (err) {
+                console.error(err);
+                return;
+              }
+            });
 
             GreetingCard.findByIdAndUpdate(gcID, gcdata, { new: true })
               .then(card => {

@@ -30,7 +30,7 @@ exports.upload_large = file => {
       {
         use_filename: true,
         folder: file.folder_name,
-        resource_type: "video",
+        resource_type: file.resource_type,
         chunk_size: 100000000
       },
       (err, res) => {
