@@ -21,7 +21,7 @@
     "@fortawesome/fontawesome-free": "^5.11.2",
     "@ladjs/bootstrap-social": "^7.0.2",
     "@octokit/rest": "^16.34.1",
-    "acorn": "^7.1.0",
+    "acorn": "^7.1.1",
     "axios": "^0.19.0",
     "base64-to-image": "^1.0.2",
     "bcrypt": "^3.0.6",
