@@ -8,6 +8,8 @@ const greetingCardSchema = new mongoose.Schema(
     imageID: { type: mongoose.Schema.Types.ObjectID, ref: "Image" },
     videoID: { type: mongoose.Schema.Types.ObjectID, ref: "Video" },
     soundID: { type: mongoose.Schema.Types.ObjectID, ref: "Sound" },
+    caption: String,
+    signoff: String,
     productID: String
   },
   { timestamps: true }

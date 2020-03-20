@@ -46,11 +46,14 @@ exports.postVideoUpload = async (req, res) => {
     ? mongoose.Types.ObjectId(_.get(req.body, "greeting_card_id"))
     : "123456789012";
   let greetingcard = await GreetingCard.findOne({ _id: gcID }).exec();
+
   let gcdata = {
     name: greetingcard.name,
     productID: greetingcard.productID,
     imageID: greetingcard.imageID,
-    soundID: greetingcard.soundID
+    soundID: greetingcard.soundID,
+    caption: _.get(req.body, "caption"),
+    signoff: _.get(req.body, "sign_off")
   };
 
   if (req.files) {
@@ -60,8 +63,6 @@ exports.postVideoUpload = async (req, res) => {
     if (upload.size < file_upload_limit) {
       let data = {
         name: upload.filename,
-        caption: _.get(req.body, "caption"),
-        signoff: _.get(req.body, "sign_off"),
         format: video_format,
         size: upload.size
       };
@@ -95,6 +96,7 @@ exports.postVideoUpload = async (req, res) => {
 
             GreetingCard.findByIdAndUpdate(gcID, gcdata, { new: true })
               .then(card => {
+                console.log(card);
                 Promise.all([cd, video]).then(result => {
                   res.status(201).json(video);
                 });

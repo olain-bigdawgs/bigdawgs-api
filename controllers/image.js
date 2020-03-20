@@ -51,7 +51,7 @@ exports.postFileUpload = async (req, res) => {
     imgdata.base64img.indexOf(";base64")
   );
   let imgOptions = {
-    fileName: _.get(req.body, "imageID"),
+    fileName: imgdata.imgID,
     type: imgformat
   };
 
@@ -92,9 +92,9 @@ exports.postFileUpload = async (req, res) => {
 
     image
       .save()
-      .then(image => {
+      .then(img => {
         let gcdata = {
-          imageID: image._id,
+          imageID: img._id,
           productID: _.get(req.body, "product_id")
         };
 
@@ -104,6 +104,7 @@ exports.postFileUpload = async (req, res) => {
           .save()
           .then(card => {
             data.greetingCardID = card._id;
+            data._id = img._id;
             res.status(201).json(data);
           })
           .catch(err => {
