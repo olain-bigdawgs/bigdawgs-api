@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 const _ = require("lodash");
 const mongoose = require("mongoose");
 const path = require("path");
+const mailer = require("../services/mailer");
+const moment = require("moment");
 const GreetingCard = require("../models/GreetingCard");
 const Image = require("../models/Image");
 const Video = require("../models/Video");
@@ -34,8 +36,8 @@ exports.getCardById = async (req, res) => {
     imageUrl: _.get(image, "imageUrl.url"),
     videoUrl: _.get(video, "videoUrl.url", ""),
     soundUrl: _.get(sound, "soundUrl.url", ""),
-    caption: _.get(image, "caption", ""),
-    sign_off: _.get(image, "signoff", "")
+    caption: _.get(greeting_card, "caption", ""),
+    sign_off: _.get(greeting_card, "signoff", "")
   };
 
   return res.status(200).json(display_data);
@@ -109,6 +111,10 @@ exports.updateGreetingCard = async (req, res) => {
 };
 
 exports.deleteGreetingCard = async (req, res) => {
+  let objId = mongoose.Types.ObjectId.isValid(req.params.id)
+    ? mongoose.Types.ObjectId(req.params.id)
+    : "123456789012";
+
   try {
     await GreetingCard.findOne({ _id: objId }).exec();
   } catch (err) {
@@ -117,10 +123,6 @@ exports.deleteGreetingCard = async (req, res) => {
       errors: [{ msg: err }]
     });
   }
-
-  let objId = mongoose.Types.ObjectId.isValid(req.params.id)
-    ? mongoose.Types.ObjectId(req.params.id)
-    : "123456789012";
 
   GreetingCard.remove({ _id: objId }, err => {
     if (err) {
@@ -132,4 +134,59 @@ exports.deleteGreetingCard = async (req, res) => {
 
     return res.status(204).json();
   });
+};
+
+exports.sendGreetingCardAssets = async (req, res) => {
+  let objId = mongoose.Types.ObjectId.isValid(req.params.id)
+    ? mongoose.Types.ObjectId(req.params.id)
+    : "123456789012";
+
+  let greeting_card = await GreetingCard.findOne({
+    _id: objId
+  }).exec();
+
+  let image = await Image.findOne({ _id: greeting_card.imageID }).exec();
+  let video = await Video.findOne({ _id: greeting_card.videoID }).exec();
+  let sound = await Sound.findOne({ _id: greeting_card.soundID }).exec();
+
+  let mailBody = {
+    imageUrl: _.get(image, "imageUrl.url"),
+    videoUrl: _.get(video, "videoUrl.url"),
+    soundUrl: _.get(sound, "soundUrl.url"),
+    caption: _.get(greeting_card, "caption", ""),
+    sign_off: _.get(greeting_card, "signoff", ""),
+    product_id: _.get(greeting_card, "productID", "")
+  };
+
+  res.render(
+    "mail",
+    { data: mailBody, description: greeting_card.description, moment },
+    (err, emailContent) => {
+      if (err) {
+        console.log("Email template processing failed!", err);
+        return;
+      }
+
+      let mailOptions = {
+        to: process.env.DEFAULT_EMAIL_RECEIPIENT,
+        from: process.env.DEFAULT_EMAIL_SENDER,
+        subject: "Custom Greeting Card Product No. " + mailBody.product_id,
+        html: emailContent
+      };
+
+      mailer.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          console.log(err);
+          return res.status(400).json({
+            message: "Something went wrong",
+            errors: [{ msg: err }]
+          });
+        }
+        console.log(info);
+        return res.status(201).json(info.response);
+      });
+    }
+  );
+
+  // return res.status(201);
 };
