@@ -10,7 +10,8 @@ const greetingCardSchema = new mongoose.Schema(
     soundID: { type: mongoose.Schema.Types.ObjectID, ref: "Sound" },
     caption: String,
     signoff: String,
-    productID: String
+    productID: String,
+    description: String
   },
   { timestamps: true }
 );

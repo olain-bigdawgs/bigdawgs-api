@@ -95,7 +95,8 @@ exports.postFileUpload = async (req, res) => {
       .then(img => {
         let gcdata = {
           imageID: img._id,
-          productID: _.get(req.body, "product_id")
+          productID: _.get(req.body, "product_id"),
+          description: _.get(req.body, "gc_description")
         };
 
         let greetingcard = new GreetingCard(gcdata);

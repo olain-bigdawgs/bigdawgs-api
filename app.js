@@ -226,6 +226,7 @@ app.get("/test-video", homeController.indexVideo);
 // greeting card routes
 app.get("/greeting-card/:id", greetingCardController.getCardById);
 app.post("/greeting-card", greetingCardController.postGreetingCard);
+app.get("/send/:id", greetingCardController.sendGreetingCardAssets);
 
 // image routes
 app.get("/image/:id", imageController.getImageById);
