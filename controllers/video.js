@@ -96,7 +96,6 @@ exports.postVideoUpload = async (req, res) => {
 
             GreetingCard.findByIdAndUpdate(gcID, gcdata, { new: true })
               .then(card => {
-                console.log(card);
                 Promise.all([cd, video]).then(result => {
                   res.status(201).json(video);
                 });
