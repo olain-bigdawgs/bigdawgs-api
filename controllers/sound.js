@@ -87,8 +87,6 @@ exports.postSoundUpload = async (req, res) => {
 
             GreetingCard.findByIdAndUpdate(gcID, gcdata, { new: true })
               .then(card => {
-                console.log(sound);
-                console.log(card);
                 res.status(201).json(sound);
               })
               .catch(err => {
