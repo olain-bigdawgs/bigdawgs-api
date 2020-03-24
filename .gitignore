@@ -56,3 +56,17 @@ Thumbs.db
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
+
+.bash_history
+.bash_logout
+.bashrc
+.cache/
+.cloud-locale-test.skip
+.config/
+.gitconfig
+.pm2/
+.profile
+.ssh/
+.sudo_as_admin_successful
+.vim/
+.viminfo
