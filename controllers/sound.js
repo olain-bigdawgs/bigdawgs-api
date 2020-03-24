@@ -52,7 +52,8 @@ exports.postSoundUpload = async (req, res) => {
 
       let cld = {
         path: upload.path,
-        folder_name: "Sounds"
+        folder_name: "Sounds",
+        resource_type: "video"
       };
 
       let cd = cloudinary.upload(cld);
@@ -86,6 +87,8 @@ exports.postSoundUpload = async (req, res) => {
 
             GreetingCard.findByIdAndUpdate(gcID, gcdata, { new: true })
               .then(card => {
+                console.log(sound);
+                console.log(card);
                 res.status(201).json(sound);
               })
               .catch(err => {
